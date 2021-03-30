@@ -1,0 +1,32 @@
+= Equality Speed in Kotlin (Sandbox)
+
+I recently saw a performance question where two kotlin classes where compared by id and it was quite slow. I wondered if we can speed this up somehow so I wrote three variations of DDD entities in Kotlin.
+
+*Features*:
+
+* 3 implementations of data classes with different `equals` implementations
+
+*Results*:
+
+* The data class comparison seems to be the fastest, followed by the instanceof version and last place is taken by the javaclass version. I assume javaClass is significantly slower because it first comparse javaclass and if they are true casts Any to the target class. 
+
+== Entities and Value Objects
+
+The link:https://www.dddcommunity.org/resources/ddd_terms/[DDD Glossary] differentiates (amongst many others) between entities and value objects.
+
+*Entity*: An object fundamentally defined not by its attributes, but by a thread of continuity (changes attributes over time) and identity. +
+*Value Object*: An object that describes some characteristic or attribute but carries no concept of identity. (It's defined by its attributes)
+
+The equality comparison needs to be very different for these two domain model types.
+
+*Entities* can only be compared by their id but not their values. An entity can be a person and this person can change its name. It's still the same person though so they should be equal before and after the name change. But at some point you might decide to put this person into a hashmap with its id. Which "version" of the person do you put as the value? The one before or after the name change? If they are truly equal then it shouldn't matter what version you put. The way I typically overcome this is by not overwriting `equals` at all but introducing two separate methods `hasSameidAs` and `hasSameVersionAs`. A bit more cumbersome but it makes our intentions clear. And since I don't see a reason to put entities into Sets or similar I don't need to overwrite hashCode and am now done.
+
+*Value Objects* are compared by their values (attributes). Consider money. If you lend someone a 10€ bill and she later returns a different 10€ bill, then you have the same amount of money right? You don't care about the individual bills, only about the amount on the bill and the currency. We can represent this with a `data class Money(val amount: BigDecimal, val currency: Currency)`. If I create two money objects with the same values then they should be equal (`Money(10, EUR) == Money(10, EUR)`) Because you don't care about the individual bills, you don't need an id which identifies the bill.
+*Summary*: Entities have an id and a life cycle and are compared by their id (and probably version as well). Value Objects only have values (attributes) and are compared only by those. Kotlin data classes are thus perfectly suited to value objects and less so for entities.
+
+
+_Despite what I said above_, just for this test I'll still overwrite equals because it makes the comparison in the test easier to read.
+
+== Usage
+
+`mvn verify`
