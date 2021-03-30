@@ -23,7 +23,7 @@ class EqualityTest {
         }
         val averageElapsedTime = df.format(totalElapsedTime.toDouble() / entityCount)
         // assert
-        testReporter.publishEntry("EqualityCompare with InstanceOf took per element on average $averageElapsedTime")
+        testReporter.publishEntry("EqualityCompare with InstanceOf took per element on average $averageElapsedTime ms")
         assertThat(areEqual).isTrue()
     }
 
@@ -39,7 +39,7 @@ class EqualityTest {
         }
         val averageElapsedTime = df.format(totalElapsedTime.toDouble() / entityCount)
         // assert
-        testReporter.publishEntry("EqualityCompare with JavaClass took per element on average $averageElapsedTime")
+        testReporter.publishEntry("EqualityCompare with JavaClass took per element on average $averageElapsedTime ms")
         assertThat(areEqual).isTrue()
     }
 
@@ -55,7 +55,7 @@ class EqualityTest {
         }
         val averageElapsedTime = df.format(totalElapsedTime.toDouble() / entityCount)
         // assert
-        testReporter.publishEntry("EqualityCompare with data class took per element on average $averageElapsedTime")
+        testReporter.publishEntry("EqualityCompare with data class took per element on average $averageElapsedTime ms")
         assertThat(areEqual).isTrue()
     }
 }
